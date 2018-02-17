@@ -2,20 +2,20 @@
 let friendsData = require('../data/friends');
 
 const matchFriend = function(friendsList, newPerson) {
-  let prev = 40;
-  let best_match;
+  let bestScore = 40;
+  let bestMatch;
 
-  for (const [i, friend] of friendsList.entries()) {
+  for (const friend of friendsList) {
    
-    let score = friend.scores.reduce( (sum, friend_score) => sum + Math.abs(friend_score - newPerson.scores[i]) );
-    console.log(score);
-    if ( score <= prev ) {
-      prev = score;
-      best_match = friend;
+    let score = friend.scores.reduce( (sum, numScore, i) => sum + Math.abs(numScore - newPerson.scores[i]) );
+    // console.log(score);
+    if ( score <= bestScore ) {
+      bestScore = score;
+      bestMatch = friend;
     }
   };
 
-  return best_match;
+  return bestMatch;
 }
 module.exports = function(app) {
 
@@ -29,11 +29,10 @@ module.exports = function(app) {
       photo: req.body.photo,
       scores: req.body["scores[]"]
     }
-
-    match = matchFriend(friendsData, newFriend);
-
-    console.log(match);
     friendsData.push(newFriend);
+
+    let match = matchFriend(friendsData, newFriend);
+    console.log(match);
 
     res.json(match);
   });
